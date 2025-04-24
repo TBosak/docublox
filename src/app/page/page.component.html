@@ -1,0 +1,36 @@
+<sp-theme system="spectrum-two" scale="medium" color="dark">
+  <div class="page-layout">
+
+    <sp-popover id="overlay" class="overlay-popover" [open]="focusedEditor" style="position: fixed; top: 1rem; right: 1rem; z-index: 9999;">
+      <sp-action-group vertical quiet emphasized selects="multiple">
+        @for (btn of toolbarActions; track btn) {
+        <sp-action-button (mousedown)="onToolbarMouseDown($event)"
+                          (click)="execToolbarAction(btn.action)"
+                          [selected]="isSelected(btn.mark, btn.opts)">
+          <span *ngIf="btn.iconHtml" [innerHTML]="btn.iconHtml"></span>
+        </sp-action-button>
+      }
+      </sp-action-group>
+    </sp-popover>
+
+    <div class="gridster-container">
+      <gridster [options]="options">
+        @for (item of editors; track item) {
+          <gridster-item [item]="item" class="editor-block">
+            <div class="editor-wrapper">
+              <button class="remove-button" (click)="removeEditor(item.id)">Remove</button>
+              <tiptap-editor
+                class="editor-container"
+                [editor]="item.editor"
+                (focus)="setFocusedEditor(item.editor)"
+                (blur)="clearFocusedEditor()"
+              ></tiptap-editor>
+            </div>
+          </gridster-item>
+        }
+      </gridster>
+    </div>
+
+    <sp-button (click)="addEditor()">Add Editor</sp-button>
+  </div>
+</sp-theme>

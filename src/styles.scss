@@ -1,1 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+html,
+body,
+:host {
+  height: 100%;
+}
+
+.editor-container .ProseMirror {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 1rem;
+  // border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.ProseMirror p {
+  margin: 0;
+  line-height: 1.4;
+}
