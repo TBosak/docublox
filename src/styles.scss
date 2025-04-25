@@ -16,3 +16,11 @@ body,
   margin: 0;
   line-height: 1.4;
 }
+
+gridster-item {
+  transition: unset !important;
+}
+
+gridster.exporting{
+  background: white !important;
+}

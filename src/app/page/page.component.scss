@@ -1,21 +1,25 @@
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
 }
 
 .page-layout {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-  padding: 1rem;
-  box-sizing: border-box;
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
 }
 
 .gridster-container {
-  flex: 1 1 auto;
-  min-height: 0;
+  margin: 0 auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  overflow: visible;
 }
 
 gridster {
@@ -53,4 +57,70 @@ gridster {
   align-self: flex-end;
   margin-bottom: 0.5rem;
   z-index: 1;
+}
+
+tiptap-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+body.exporting {
+  *::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .sp-button,
+  .menu-button,
+  .grid-lines,
+  .sp-popover,
+  .sp-action-group {
+    display: none !important;
+  }
+
+  .gridster-container {
+    background: transparent !important;
+    overflow: visible !important;
+  }
+
+}
+
+.page-zone {
+  width: 794px;
+  height: 1123px;
+  display: block;
+  position: relative;
+  box-shadow: 0 0 10px rgba(0,0,0,.2);
+}
+
+#capture-area{
+  width: fit-content;
+  height: fit-content;
+}
+
+.fab-buttons {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 1000;
+}
+
+body.exporting .gridster-container {
+  gap: 0 !important;
+}
+
+body.exporting .page-zone:last-child {
+  margin-bottom: 0 !important;
+}
+
+body.exporting .page-zone,
+body.exporting .editor-container {
+  overflow: visible !important;
+}
+
+body.exporting .gridster-item {
+  transform: none !important;
 }
