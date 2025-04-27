@@ -4,41 +4,60 @@
     <sp-popover id="overlay" class="overlay-popover" [open]="focusedEditor"
       style="position: fixed; top: 1rem; right: 1rem; z-index: 9999;">
       <sp-action-group vertical quiet emphasized selects="multiple">
-        @for (btn of toolbarActions; track btn) {
-        <sp-action-button (mousedown)="onToolbarMouseDown($event)" (click)="execToolbarAction(btn.action)"
-          [selected]="isSelected(btn.mark!, btn.opts)">
-          <span *ngIf="btn.iconHtml" [innerHTML]="btn.iconHtml"></span>
-        </sp-action-button>
-        }
+        <ng-container *ngFor="let btn of toolbarActions; let i = index; trackBy: trackByIndex">
+          <sp-action-button [id]="'editor-btn-' + i" (mousedown)="onToolbarMouseDown($event)"
+            (click)="execToolbarAction(btn.action)" [selected]="isSelected(btn.mark!, btn.opts)">
+            <span [innerHTML]="btn.iconHtml"></span>
+          </sp-action-button>
+
+          <sp-overlay [attr.trigger]="'editor-btn-' + i + '@hover'" type="hint">
+            <sp-tooltip>{{ btn.tooltip }}</sp-tooltip>
+          </sp-overlay>
+        </ng-container>
       </sp-action-group>
     </sp-popover>
+
 
     <div class="gridster-container" [class.no-grid]="isExporting" id="capture-area">
       <gridster *ngFor="let page of pages; trackBy: trackById" [options]="options" [class.exporting]="isExporting"
         class="page-zone" #pageZone>
         <gridster-item #gridsterItem *ngFor="let item of page.items; trackBy: trackById" [item]="item"
           class="editor-block">
-            <sp-action-menu size="s" *ngIf="!isExporting">
-              <sp-menu-item (click)="gridsterItem.bringToFront(1)">
-                Bring forward
-              </sp-menu-item>
-              <sp-menu-item (click)="gridsterItem.sendToBack(1)">
-                Send backward
-              </sp-menu-item>
-              <sp-menu-item (click)="removeEditor(page.id,item.id)" class="delete-editor">
-                Delete
-              </sp-menu-item>
-            </sp-action-menu>
-            <tiptap-editor class="editor-container" [editor]="item.editor" (focus)="setFocusedEditor(item.editor)"
-              (blur)="clearFocusedEditor()"></tiptap-editor>
+          <sp-action-menu size="s" *ngIf="!isExporting">
+            <sp-menu-item (click)="gridsterItem.bringToFront(1)">
+              Bring forward
+            </sp-menu-item>
+            <sp-menu-item (click)="gridsterItem.sendToBack(1)">
+              Send backward
+            </sp-menu-item>
+            <sp-menu-item (click)="removeEditor(page.id,item.id)" class="delete-editor">
+              Delete
+            </sp-menu-item>
+          </sp-action-menu>
+          <tiptap-editor class="editor-container" [editor]="item.editor" (focus)="setFocusedEditor(item.editor)"
+            (blur)="clearFocusedEditor()"></tiptap-editor>
         </gridster-item>
       </gridster>
     </div>
   </div>
-<div class="fab-buttons" *ngIf="!isExporting">
-  <sp-button *ngIf="!isExporting" (click)="addPageAfterVisible()">Add Page</sp-button>
-  <sp-button *ngIf="!isExporting" (click)="addEditorToPage()">Add Editor</sp-button>
-  <sp-button *ngIf="!isExporting" (click)="exportToPDF()">Export as PDF</sp-button>
-</div>
-<input type="file" #imageInput accept="image/*" style="display: none" (change)="onImageSelected($event)" />
+  <div class="fab-buttons" *ngIf="!isExporting">
+    <sp-popover id="doc-tools" class="overlay-popover" [open]="!isExporting" placement="left"
+      style="position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;">
+      <sp-action-group vertical quiet emphasized>
+        <sp-action-button id="btn-add-page" (click)="addPageAfterVisible()" hold-affordance>
+          <i class="fa-solid fa-file-circle-plus" slot="icon"></i>
+        </sp-action-button>
+        <sp-action-button id="btn-add-editor" (click)="addEditorToPage()" hold-affordance>
+          <i class="fa-solid fa-pen-to-square" slot="icon"></i>
+        </sp-action-button>
+        <sp-action-button id="btn-export-pdf" (click)="exportToPDF()" hold-affordance>
+          <i class="fa-solid fa-file-export" slot="icon"></i>
+        </sp-action-button>
+      </sp-action-group>
+      <sp-overlay trigger="btn-add-page@hover" type="hint"><sp-tooltip>Add page</sp-tooltip></sp-overlay>
+      <sp-overlay trigger="btn-add-editor@hover" type="hint"><sp-tooltip>Add editor</sp-tooltip></sp-overlay>
+      <sp-overlay trigger="btn-export-pdf@hover" type="hint"><sp-tooltip>Export PDF</sp-tooltip></sp-overlay>
+    </sp-popover>
+  </div>
+  <input type="file" #imageInput accept="image/*" style="display: none" (change)="onImageSelected($event)" />
 </sp-theme>

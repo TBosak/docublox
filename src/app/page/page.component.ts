@@ -339,6 +339,10 @@ export class PageComponent implements AfterViewInit {
     return item.id;
   }
 
+  trackByIndex(index: number): number {
+    return index;
+  }
+
   set isExporting(value: boolean) {
     this._isExporting = value;
     document.body.classList.toggle('exporting', value);
