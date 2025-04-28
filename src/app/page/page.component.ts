@@ -27,6 +27,8 @@ import {
 } from 'angular-gridster2';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import { TextStyle } from '@tiptap/extension-text-style';
+import { Color } from '@tiptap/extension-color';
 import '@spectrum-web-components/bundle/elements.js';
 import '@spectrum-web-components/theme/spectrum-two/scale-medium.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-dark.js';
@@ -41,8 +43,9 @@ interface EditorItem extends GridsterItem {
   imports: [
     CommonModule,
     TiptapEditorDirective,
+    // TiptapBubbleMenuDirective,
     GridsterComponent,
-    GridsterItemComponent,
+    GridsterItemComponent
   ],
   standalone: true,
   templateUrl: './page.component.html',
@@ -58,6 +61,7 @@ export class PageComponent implements AfterViewInit {
   visiblePageIndex = 0;
   pages: { id: number; items: EditorItem[] }[] = [{ id: 0, items: [] }];
   options: GridsterConfig = {
+    margin: 1,
     gridType: 'scrollVertical',
     minCols: 10,
     minRows: 10,
@@ -170,13 +174,6 @@ export class PageComponent implements AfterViewInit {
         editor.chain().focus().toggleSuperscript().run(),
     },
     {
-      iconHtml: '<i class="fa-solid fa-highlighter"></i>',
-      tooltip: 'Highlight',
-      mark: 'highlight',
-      action: (editor: Editor) =>
-        editor.chain().focus().toggleHighlight().run(),
-    },
-    {
       iconHtml: '<i class="fa-solid fa-image"></i>',
       tooltip: 'Insert Image',
       mark: 'image',
@@ -268,13 +265,12 @@ export class PageComponent implements AfterViewInit {
     };
     reader.readAsDataURL(file);
 
-    // Clear input so re-uploading same file works
     input.value = '';
   }
 
   async exportToPDF() {
     this.isExporting = true;
-    await new Promise((r) => setTimeout(r, 50)); // let CSS take effect
+    await new Promise((r) => setTimeout(r, 50));
 
     const pdf = new jsPDF({
       unit: 'mm',
@@ -296,7 +292,7 @@ export class PageComponent implements AfterViewInit {
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
 
-      if (i) pdf.addPage(); // addPage after the first one
+      if (i) pdf.addPage();
       pdf.addImage(img, 'PNG', 0, 0, pageW, pageH);
     }
 
@@ -318,9 +314,13 @@ export class PageComponent implements AfterViewInit {
         Underline,
         Subscript,
         Superscript,
-        Highlight,
+        Highlight.configure({
+          multicolor: true
+        }),
         Image,
         ImageResize,
+        TextStyle,
+        Color
       ],
       onFocus: () => this.setFocusedEditor(editor),
       onBlur: () => this.clearFocusedEditor(),
@@ -341,6 +341,16 @@ export class PageComponent implements AfterViewInit {
 
   trackByIndex(index: number): number {
     return index;
+  }
+
+  updateHighlightColor(event: Event) {
+    event.stopPropagation();
+    this.focusedEditor!.chain().focus().toggleHighlight({color: (event.target as any).value}).run()
+  }
+
+  updateTextColor(event: Event) {
+    event.stopPropagation();
+    this.focusedEditor!.chain().focus().setColor((event.target as any).value).run()
   }
 
   set isExporting(value: boolean) {

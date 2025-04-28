@@ -31,10 +31,13 @@ gridster {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 0.5rem;
+  padding: 0.15rem;
   box-sizing: border-box;
-  border-radius: 6px;
   overflow: hidden;
+}
+
+.editor-block:hover {
+  background: var(--editor-background);
 }
 
 .editor-wrapper {
@@ -46,8 +49,8 @@ gridster {
 .editor-container {
   flex-grow: 1;
   overflow: auto;
-  border-radius: 4px;
-  padding: 0.5rem;
+  // border-radius: 4px;
+  // padding: 0.5rem;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -63,6 +66,7 @@ tiptap-editor {
   display: flex;
   flex-direction: column;
   height: 100%;
+  background: white;
 }
 
 body.exporting {
@@ -123,4 +127,16 @@ body.exporting .editor-container {
 
 body.exporting .gridster-item {
   transform: none !important;
+}
+
+sp-action-button:hover .fa-solid{
+  color:var(--hover-colour);
+}
+
+.editor-block sp-action-menu {
+  display: none;
+}
+
+.editor-block:hover sp-action-menu {
+  display: block;
 }
