@@ -62,7 +62,7 @@ export class PageComponent implements AfterViewInit {
   pages: { id: number; items: EditorItem[] }[] = [{ id: 0, items: [] }];
   options: GridsterConfig = {
     margin: 1,
-    gridType: 'scrollVertical',
+    gridType: 'fit',
     minCols: 10,
     minRows: 10,
     defaultItemCols: 1,
