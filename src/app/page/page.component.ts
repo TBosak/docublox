@@ -64,7 +64,7 @@ export class PageComponent implements AfterViewInit {
     margin: 1,
     gridType: 'fit',
     minCols: 10,
-    minRows: 10,
+    minRows: 15,
     defaultItemCols: 1,
     defaultItemRows: 1,
     draggable: {

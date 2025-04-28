@@ -2,7 +2,7 @@
   <div class="page-layout">
 
     <sp-popover id="overlay" class="overlay-popover" [open]="focusedEditor"
-      style="position: fixed; top: 1rem; right: 1rem; z-index: 9999;">
+      style="position: fixed; top: 1rem; right: 3rem; z-index: 9999;">
       <sp-action-group vertical quiet emphasized selects="multiple" size="s">
         <ng-container *ngFor="let btn of toolbarActions; let i = index; trackBy: trackByIndex">
           <sp-action-button [id]="'editor-btn-' + i" (mousedown)="onToolbarMouseDown($event)"
@@ -16,32 +16,21 @@
       </sp-action-group>
     </sp-popover>
 
-    <sp-popover [open]="focusedEditor" style="position: fixed; top: 1rem; left: 1rem; z-index: 9999;">
-      <sp-action-group *ngIf="focusedEditor" vertical quiet emphasized selects="multiple" size="s">
-        <sp-action-button
-          id="editor-btn-text-color"
-          (click)="textColor.click()"
-          (mousedown)="onToolbarMouseDown($event)"
-          [selected]="false"
+    <sp-popover [open]="focusedEditor" style="position: fixed; top: 1rem; right: 1rem; z-index: 9999;">
+        <sp-action-button *ngIf="focusedEditor" id="editor-btn-text-color" (click)="textColor.click()"
+          (mousedown)="onToolbarMouseDown($event)" [selected]="focusedEditor.isActive('textStyle')"
           [style.--hover-colour]="focusedEditor.getAttributes('textStyle')['color']">
           <i class="fa-solid fa-font"></i>
         </sp-action-button>
-        <sp-action-button
-          id="editor-btn-highlight-color"
-          (click)="highlightColor.click()"
-          (mousedown)="onToolbarMouseDown($event)"
-          [selected]="false"
+        <sp-action-button *ngIf="focusedEditor" id="editor-btn-highlight-color" (click)="highlightColor.click()"
+          (mousedown)="onToolbarMouseDown($event)" [selected]="focusedEditor.isActive('highlight')"
           [style.--hover-colour]="focusedEditor.getAttributes('highlight')['color']">
           <i class="fa-solid fa-highlighter"></i>
         </sp-action-button>
-        <sp-action-button
-          id="editor-btn-clear"
-          (click)="focusedEditor.commands.unsetAllMarks()"
-          (mousedown)="onToolbarMouseDown($event)"
-          [selected]="false">
-          <i class="fa-solid fa-eraser" slot="icon"></i>
-        </sp-action-button>
-      </sp-action-group>
+      <sp-action-button *ngIf="focusedEditor" id="editor-btn-clear" (click)="focusedEditor.commands.unsetAllMarks()"
+        (mousedown)="onToolbarMouseDown($event)" [selected]="false">
+        <i class="fa-solid fa-eraser" slot="icon"></i>
+      </sp-action-button>
       <sp-overlay trigger="editor-btn-@hover" type="hint"><sp-tooltip>Bold</sp-tooltip></sp-overlay>
     </sp-popover>
 
@@ -71,9 +60,9 @@
     </div>
   </div>
   <div class="fab-buttons" *ngIf="!isExporting">
-    <sp-popover id="doc-tools" class="overlay-popover" [open]="!isExporting" placement="left"
+    <sp-popover id="doc-tools" class="overlay-popover" [open]="!isExporting"
       style="position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;">
-      <sp-action-group vertical quiet emphasized size="s">
+      <sp-action-group horizontal quiet emphasized size="s">
         <sp-action-button id="btn-add-page" (click)="addPageAfterVisible()">
           <i class="fa-solid fa-file-circle-plus" slot="icon"></i>
         </sp-action-button>
