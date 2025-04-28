@@ -29,10 +29,10 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
+import ImageEditor from 'tui-image-editor';
 import '@spectrum-web-components/bundle/elements.js';
 import '@spectrum-web-components/theme/spectrum-two/scale-medium.js';
 import '@spectrum-web-components/theme/spectrum-two/theme-dark.js';
-
 interface EditorItem extends GridsterItem {
   editor: Editor;
   id: number;
@@ -45,7 +45,7 @@ interface EditorItem extends GridsterItem {
     TiptapEditorDirective,
     // TiptapBubbleMenuDirective,
     GridsterComponent,
-    GridsterItemComponent
+    GridsterItemComponent,
   ],
   standalone: true,
   templateUrl: './page.component.html',
@@ -53,6 +53,14 @@ interface EditorItem extends GridsterItem {
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class PageComponent implements AfterViewInit {
+  showImageEditor = false;
+  private get hasEditor(): boolean {
+    return !!this.tui;
+  }
+  private activeImgEl: HTMLImageElement | null = null;
+  private activeTiptap!: Editor;
+  private tui!: ImageEditor;
+  @ViewChild('tuiHost', { read: ElementRef }) host!: ElementRef<HTMLDivElement>;
   @ViewChild('imageInput') imageInput!: ElementRef<HTMLInputElement>;
   @ViewChildren('pageZone', { read: ElementRef })
   pageZones!: QueryList<ElementRef>;
@@ -75,7 +83,7 @@ export class PageComponent implements AfterViewInit {
     pushItems: true,
     showGrid: false,
     allowMultiLayer: true,
-    useTransformPositioning: false
+    useTransformPositioning: false,
   };
   editors: EditorItem[] = [];
   nextId = 1;
@@ -315,15 +323,27 @@ export class PageComponent implements AfterViewInit {
         Subscript,
         Superscript,
         Highlight.configure({
-          multicolor: true
+          multicolor: true,
         }),
         Image,
         ImageResize,
         TextStyle,
-        Color
+        Color,
       ],
       onFocus: () => this.setFocusedEditor(editor),
       onBlur: () => this.clearFocusedEditor(),
+      editorProps: {
+        handleDOMEvents: {
+          click: (_view, ev) => {
+            const target = ev.target as HTMLElement;
+            if (target?.tagName === 'IMG') {
+              this.openImageEditor(target as HTMLImageElement, editor);
+              return true;
+            }
+            return false;
+          },
+        },
+      },
     });
 
     page.items.push({ editor, id: this.nextId++ } as EditorItem);
@@ -345,12 +365,107 @@ export class PageComponent implements AfterViewInit {
 
   updateHighlightColor(event: Event) {
     event.stopPropagation();
-    this.focusedEditor!.chain().focus().toggleHighlight({color: (event.target as any).value}).run()
+    this.focusedEditor!.chain()
+      .focus()
+      .toggleHighlight({ color: (event.target as any).value })
+      .run();
   }
 
   updateTextColor(event: Event) {
     event.stopPropagation();
-    this.focusedEditor!.chain().focus().setColor((event.target as any).value).run()
+    this.focusedEditor!.chain()
+      .focus()
+      .setColor((event.target as any).value)
+      .run();
+  }
+
+  openImageEditor(imgEl: HTMLImageElement, ed: Editor) {
+    this.activeImgEl = imgEl;
+    this.activeTiptap = ed;
+    this.tui?.destroy?.();
+    this.tui = undefined!;
+    this.showImageEditor = true;
+    this.cdr.detectChanges();
+    const hostEl = this.host.nativeElement;
+    hostEl.style.width = '100%'; // use all the free space horizontally
+    hostEl.style.height = '';
+    this.tui = new ImageEditor(hostEl, {
+      cssMaxWidth: hostEl.offsetWidth,
+      cssMaxHeight: Infinity,
+      usageStatistics: false,
+    });
+    this.tui.loadImageFromURL(imgEl.src, 'image').then(() => {});
+  }
+
+  private cropping = false;
+
+  startCrop() {
+    if (!this.hasEditor) return;
+
+    if (!this.cropping) {
+      this.tui.startDrawingMode('CROPPER');
+      this.cropping = true;
+    } else {
+      const rect = this.tui.getCropzoneRect();
+      if (rect.width && rect.height) {
+        this.tui.crop(rect).then(() => {
+          this.tui.stopDrawingMode();
+          this.cropping = false;
+        });
+      }
+    }
+  }
+  rotate() {
+    if (this.hasEditor) this.tui.rotate(90);
+  }
+  flipX() {
+    if (this.hasEditor) this.tui.flipX();
+  }
+  flipY() {
+    if (this.hasEditor) this.tui.flipY();
+  }
+  undo() {
+    if (this.hasEditor) this.tui.undo();
+  }
+  redo() {
+    if (this.hasEditor) this.tui.redo();
+  }
+
+  apply() {
+    if (!this.hasEditor) {
+      this.close();
+      return;
+    }
+    const dataURL = this.tui.toDataURL({ format: 'png' });
+    const { width, height } = this.activeImgEl!.dataset
+      ? {
+          width: parseInt(this.activeImgEl!.dataset['width'] || '0', 10),
+          height: parseInt(this.activeImgEl!.dataset['height'] || '0', 10),
+        }
+      : {
+          width: this.activeImgEl!.width,
+          height: this.activeImgEl!.height,
+        };
+    const pos = this.activeTiptap.view.posAtDOM(this.activeImgEl!, 0);
+    this.activeTiptap
+      .chain()
+      .focus()
+      .deleteRange({ from: pos, to: pos + 1 })
+      .insertContent({
+        type: 'image',
+        attrs: { src: dataURL, width, height },
+      })
+      .run();
+    this.close();
+  }
+
+  close() {
+    if (this.tui) {
+      this.tui.stopDrawingMode();
+      this.tui.destroy();
+      this.tui = undefined!;
+    }
+    this.showImageEditor = false;
   }
 
   set isExporting(value: boolean) {

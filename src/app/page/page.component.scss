@@ -140,3 +140,10 @@ sp-action-button:hover .fa-solid{
 .editor-block:hover sp-action-menu {
   display: block;
 }
+
+.image-editor-panel{position:fixed;left:1rem;top:50%;translate:0 -50%;
+  background:#2b2b2b;padding:.5rem;border-radius:4px;z-index:9999;
+  box-shadow:0 0 6px #000a;width:360px}
+.ie-toolbar{display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:.25rem}
+.ie-toolbar button{flex:1 0 48%;font-size:.75rem;padding:.2rem .3rem}
+.ie-canvas{width:360px;height:440px;border:1px solid #555}

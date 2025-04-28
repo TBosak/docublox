@@ -1,6 +1,21 @@
-<sp-theme system="spectrum-two" scale="medium" color="dark">
-  <div class="page-layout">
 
+<sp-theme system="spectrum-two" scale="medium" color="dark">
+
+  <div class="image-editor-panel" *ngIf="showImageEditor">
+    <div class="ie-toolbar">
+      <button (click)="startCrop()">Crop</button>
+      <button (click)="rotate()">Rotate 90°</button>
+      <button (click)="flipX()">Flip X</button>
+      <button (click)="flipY()">Flip Y</button>
+      <button (click)="undo()"><i class="fa-solid fa-undo"></i> Undo</button>
+      <button (click)="redo()"><i class="fa-solid fa-redo"></i> Redo</button>
+      <button (click)="apply()">Apply</button>
+      <button (click)="close()">Cancel</button>
+    </div>
+      <div #tuiHost class="ie-canvas"></div>
+  </div>
+
+  <div class="page-layout">
     <sp-popover id="overlay" class="overlay-popover" [open]="focusedEditor"
       style="position: fixed; top: 1rem; right: 3rem; z-index: 9999;">
       <sp-action-group vertical quiet emphasized selects="multiple" size="s">
