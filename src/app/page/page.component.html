@@ -17,7 +17,7 @@
 
   <div class="page-layout">
     <sp-popover id="overlay" class="overlay-popover" [open]="focusedEditor"
-      style="position: fixed; top: 1rem; right: 3rem; z-index: 9999;">
+      style="position: fixed; top: 1rem; right: 3.75rem; z-index: 9999;">
       <sp-action-group vertical quiet emphasized selects="multiple" size="s">
         <ng-container *ngFor="let btn of toolbarActions; let i = index; trackBy: trackByIndex">
           <sp-action-button [id]="'editor-btn-' + i" (mousedown)="onToolbarMouseDown($event)"
