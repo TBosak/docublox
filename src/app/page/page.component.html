@@ -1,18 +1,34 @@
-
 <sp-theme system="spectrum-two" scale="medium" color="dark">
 
   <div class="image-editor-panel" *ngIf="showImageEditor">
+    <div #tuiHost class="ie-canvas"></div>
     <div class="ie-toolbar">
-      <button (click)="startCrop()">Crop</button>
+      <button (click)="startCrop()">{{ cropping ? 'Capture' : 'Crop' }}</button>
       <button (click)="rotate()">Rotate 90°</button>
       <button (click)="flipX()">Flip X</button>
       <button (click)="flipY()">Flip Y</button>
-      <button (click)="undo()"><i class="fa-solid fa-undo"></i> Undo</button>
-      <button (click)="redo()"><i class="fa-solid fa-redo"></i> Redo</button>
-      <button (click)="apply()">Apply</button>
+      <button (click)="startPen()">Pen</button>
+      <div class="handle-wrapper">
+        <sp-color-handle [color]="penColor" (click)="penColour.click()" title="Pen color"></sp-color-handle>&nbsp;
+        <input type="range" min="1" max="50" step="1" [(ngModel)]="penSize" (input)="onPenSizeChange(penSize)"
+          title="Pen size" style="width:6rem" />
+      </div>
+      <input #penColour type="color" style="display:none" [(ngModel)]="penColor" (change)="changePenColour($event)"
+        class="colour-swatch" />
+      <button (click)="addText()">Add Text</button>
+      <div class="handle-wrapper">
+        <sp-color-handle [color]="textColour" (click)="textColor.click()" title="Text colour"></sp-color-handle>&nbsp;
+        <input type="range" min="8" max="120" step="1" [(ngModel)]="textSize" (input)="onTextSizeChange(textSize)"
+          title="Font size" style="width:6rem" />
+      </div>
+      <input #textColor type="color" style="display:none" [(ngModel)]="textColour"
+        (input)="onTextColourChange(textColour)" />
+      <button (click)="reset()">Reset</button>
+      <button (click)="undo()">Undo</button>
+      <button (click)="redo()">Redo</button>
+      <button class="primary" (click)="apply()">Apply</button>
       <button (click)="close()">Cancel</button>
     </div>
-      <div #tuiHost class="ie-canvas"></div>
   </div>
 
   <div class="page-layout">
@@ -32,16 +48,16 @@
     </sp-popover>
 
     <sp-popover [open]="focusedEditor" style="position: fixed; top: 1rem; right: 1rem; z-index: 9999;">
-        <sp-action-button *ngIf="focusedEditor" id="editor-btn-text-color" (click)="textColor.click()"
-          (mousedown)="onToolbarMouseDown($event)" [selected]="focusedEditor.isActive('textStyle')"
-          [style.--hover-colour]="focusedEditor.getAttributes('textStyle')['color']">
-          <i class="fa-solid fa-font"></i>
-        </sp-action-button>
-        <sp-action-button *ngIf="focusedEditor" id="editor-btn-highlight-color" (click)="highlightColor.click()"
-          (mousedown)="onToolbarMouseDown($event)" [selected]="focusedEditor.isActive('highlight')"
-          [style.--hover-colour]="focusedEditor.getAttributes('highlight')['color']">
-          <i class="fa-solid fa-highlighter"></i>
-        </sp-action-button>
+      <sp-action-button *ngIf="focusedEditor" id="editor-btn-text-color" (click)="textColor.click()"
+        (mousedown)="onToolbarMouseDown($event)" [selected]="focusedEditor.isActive('textStyle')"
+        [style.--hover-colour]="focusedEditor.getAttributes('textStyle')['color']">
+        <i class="fa-solid fa-font"></i>
+      </sp-action-button>
+      <sp-action-button *ngIf="focusedEditor" id="editor-btn-highlight-color" (click)="highlightColor.click()"
+        (mousedown)="onToolbarMouseDown($event)" [selected]="focusedEditor.isActive('highlight')"
+        [style.--hover-colour]="focusedEditor.getAttributes('highlight')['color']">
+        <i class="fa-solid fa-highlighter"></i>
+      </sp-action-button>
       <sp-action-button *ngIf="focusedEditor" id="editor-btn-clear" (click)="focusedEditor.commands.unsetAllMarks()"
         (mousedown)="onToolbarMouseDown($event)" [selected]="false">
         <i class="fa-solid fa-eraser" slot="icon"></i>
