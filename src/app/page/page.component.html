@@ -13,7 +13,7 @@
         <input type="range" min="1" max="50" step="1" [(ngModel)]="penSize" (input)="onPenSizeChange(penSize)"
           title="Pen size" style="width:6rem" />
       </div>
-      <input #penColour type="color" style="display:none" [(ngModel)]="penColor" (change)="changePenColour($event)"
+      <input #penColour type="color" style="display:none" [(ngModel)]="penColor" (change)="changePenColor($event)"
         class="colour-swatch" />
       <button (click)="addText()">Add Text</button>
       <div class="handle-wrapper">
