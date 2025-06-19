@@ -477,7 +477,7 @@ export class PageComponent implements AfterViewInit {
     this.drawingPen = true;
   }
 
-  changePenColour(ev: Event) {
+  changePenColor(ev: Event) {
     this.penColor = (ev.target as HTMLInputElement).value;
     if (this.drawingPen) {
       this.tui.setBrush({ width: this.penWidth, color: this.penColor });
